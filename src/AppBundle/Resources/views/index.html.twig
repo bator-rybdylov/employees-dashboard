@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h2>Сотрудники</h2>
+
+    {% set hireDateStr = '' %}
+    {% if (hireDate is not empty) %}
+        {% set hireDateStr = hireDate | date('Y-m-d') %}
+    {% endif %}
+
+    {% set retireDateStr = '' %}
+    {% if (retireDate is not empty) %}
+        {% set retireDateStr = retireDate | date('Y-m-d') %}
+    {% endif %}
+
+    {{ knp_pagination_filter(employees_pagination, {'departmentName': departmentName, 'hireDate': hireDateStr,  'retireDate': retireDateStr}) }}
+
+    <div class="navigation">
+        {{ knp_pagination_render(employees_pagination) }}
+    </div>
+
+    <table class="table table-bordered">
+        <tr>
+            <th>ФИО</th>
+            <th>Отдел</th>
+            <th>Должность</th>
+            <th>Телефон</th>
+            <th>Период работы</th>
+        </tr>
+        {% for employee in employees_pagination %}
+            {% set retireDate = 'н.в.' %}
+            {% if employee.retireDate is not null %}
+                {% set retireDate = employee.retireDate | date('d.m.Y') %}
+            {% endif %}
+
+            <tr {% if loop.index is odd %}class="active"{% endif %}>
+                <td>
+                    <a href="{{ path('employee_page', {'employee_id': employee.id}) }}">
+                        {{ employee.lastName }} {{ employee.firstName }} {{ employee.patronymic }}
+                    </a>
+                </td>
+                <td>{{ employee.department.name }}</td>
+                <td>{{ employee.position }}</td>
+                <td>{{ employee.phoneNumber }}</td>
+                <td>{{ employee.hireDate | date('d.m.Y') }} - {{ retireDate }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <div class="navigation">
+        {{ knp_pagination_render(employees_pagination) }}
+    </div>
+{% endblock body %}

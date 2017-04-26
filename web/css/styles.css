@@ -1,0 +1,16 @@
+.full-width {
+    width: 100%;
+}
+
+.left-menu {
+    margin-top: 30px;
+}
+
+.employee_filter {
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.employee_filter_submit {
+    margin-top: 24px;
+}

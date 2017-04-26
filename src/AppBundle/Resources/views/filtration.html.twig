@@ -1,0 +1,20 @@
+<form method="get" action="{{ action }}" enctype="application/x-www-form-urlencoded">
+    <div class="row employee_filter">
+        <div class="col-md-3">
+            <label>Отдел</label>
+            <input type="text" value="{{ fields.departmentName }}" name="departmentName" class="full-width form-control"/>
+        </div>
+        <div class="col-md-3">
+            <label>Дата начала работы</label>
+            <input type="text" value="{{ fields.hireDate }}" name="hireDate" class="full-width form-control js-datepicker"/>
+        </div>
+        <div class="col-md-3">
+            <label>Дата окончания работы</label>
+            <input type="text" value="{{ fields.retireDate }}" name="retireDate" class="full-width form-control js-datepicker"/>
+        </div>
+        <div class="col-md-2 employee_filter_submit">
+            <input type="submit" class="btn btn-success" value="Применить"/>
+        </div>
+    </div>
+
+</form>

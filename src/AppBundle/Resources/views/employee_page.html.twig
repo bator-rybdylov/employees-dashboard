@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h2>Сотрудник</h2>
+
+    <table class="table table-bordered">
+        <tr>
+            <td>ФИО</td>
+            <td>{{ employee.lastName }} {{ employee.firstName }} {{ employee.patronymic }}</td>
+        </tr>
+        <tr>
+            <td>Дата рождения</td>
+            <td>{{ employee.birthday | date('d.m.Y') }}</td>
+        </tr>
+        <tr>
+            <td>Отдел</td>
+            <td>{{ employee.department.name }}</td>
+        </tr>
+        <tr>
+            <td>Должность</td>
+            <td>{{ employee.position }}</td>
+        </tr>
+        <tr>
+            <td>Электронная почта</td>
+            <td>{{ employee.email }}</td>
+        </tr>
+        <tr>
+            <td>Телефон</td>
+            <td>{{ employee.phoneNumber }}</td>
+        </tr>
+        <tr>
+            {% set retireDate = 'н.в.' %}
+            {% if employee.retireDate is not null %}
+                {% set retireDate = employee.retireDate | date('d.m.Y') %}
+            {% endif %}
+
+            <td>Период работы</td>
+            <td>{{ employee.hireDate | date('d.m.Y') }} - {{ retireDate }}</td>
+        </tr>
+    </table>
+{% endblock body %}

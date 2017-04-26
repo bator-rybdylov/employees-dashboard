@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h2>Сотрудники</h2>
+
+    <ul class="nav nav-tabs">
+        {% for group in alphabetic_groups_list %}
+            <li {% if loop.first %} class="active" {% endif %}>
+                <a data-toggle="tab" href="#group{{ loop.index0 }}">
+                    {{ group.start }} - {{ group.end }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="tab-content">
+        {% for group in alphabetic_groups_list %}
+            <div id="group{{ loop.index0 }}" class="tab-pane fade in {% if loop.first %} active {% endif %}">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>ФИО</th>
+                        <th>Отдел</th>
+                        <th>Должность</th>
+                        <th>Телефон</th>
+                        <th>Период работы</th>
+                    </tr>
+                    {% for employee in group.employees %}
+                        {% set retireDate = 'н.в.' %}
+                        {% if employee.retireDate is not null %}
+                            {% set retireDate = employee.retireDate | date('d.m.Y') %}
+                        {% endif %}
+
+                        <tr {% if loop.index is odd %}class="active"{% endif %}>
+                            <td>
+                                <a href="{{ path('employee_page', {'employee_id': employee.id}) }}">
+                                    {{ employee.lastName }} {{ employee.firstName }} {{ employee.patronymic }}
+                                </a>
+                            </td>
+                            <td>{{ employee.department.name }}</td>
+                            <td>{{ employee.position }}</td>
+                            <td>{{ employee.phoneNumber }}</td>
+                            <td>{{ employee.hireDate | date('d.m.Y') }} - {{ retireDate }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% endfor %}
+    </div>
+
+
+{% endblock body %}
