@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Form\EmployeeFilterType;
 use AppBundle\ValueObject\EmployeeFilter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -37,13 +36,13 @@ class DefaultController extends Controller
         $employee_filter->setRetireDate($retireDate);
 
         // Find employees by filter
-        $employees_list = $manager->getRepository('AppBundle:Employee')
+        $employees_query = $manager->getRepository('AppBundle:Employee')
             ->findByEmployeeFilter($employee_filter);
 
         // Paginate employees list
         $paginator = $this->get('knp_paginator');
         $employees_pagination = $paginator->paginate(
-            $employees_list,
+            $employees_query,
             $request->query->getInt('page', 1),/*page number*/
             10
         );
@@ -74,22 +73,37 @@ class DefaultController extends Controller
 
     /**
      * @Route("/alphabetic", name="alphabetic_employees_page")
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function alphabeticPageAction()
+    public function alphabeticPageAction(Request $request)
     {
         $manager = $this->getDoctrine()->getManager();
 
-        $employee_list = $manager->getRepository('AppBundle:Employee')->findBy(
-            array(),
-            array('lastName' => 'ASC', 'firstName' => 'ASC', 'patronymic' => 'ASC')
-        );
+        $employee_alphabetic_counts = $manager->getRepository('AppBundle:Employee')->getCounts();
 
         // Distribute employees in alphabetical groups
-        $alphabetic_groups_list = $this->get('app.group_maker')->makeGroups($employee_list);
+        $group_maker = $this->get('app.group_maker');
+        $alphabetic_groups_list = $group_maker->makeGroups($employee_alphabetic_counts);
+
+        // Get group number from request
+        $group_number = $request->query->getInt('group', 1) - 1;
+        if ($group_number < 0 || $group_number > count($alphabetic_groups_list)) {
+            $group_number = 0;
+        }
+        // Get array of symbols of this group
+        $symbols_range = $group_maker->getAlphabetRange(
+            $alphabetic_groups_list[$group_number]['start'],
+            $alphabetic_groups_list[$group_number]['end']
+        );
+
+        // Get employees only for this group
+        $employee_list = $manager->getRepository('AppBundle:Employee')->findByFirstSymbol($symbols_range);
 
         return $this->render('@App/alphabetic_page.html.twig', array(
-            'alphabetic_groups_list' => $alphabetic_groups_list
+            'alphabetic_groups_list' => $alphabetic_groups_list,
+            'employee_list' => $employee_list,
+            'group_number' => $group_number,
         ));
     }
 }
